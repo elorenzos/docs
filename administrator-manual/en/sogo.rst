@@ -1,3 +1,5 @@
+.. _SOGo-section:
+
 ====
 SOGo
 ====
@@ -95,7 +97,7 @@ Terms highlighted in **bold** are documented in SOGo `installation and configura
 * ``AdminUsers`` comma separated list of accounts allowed to bypass SOGo ACLs. See **SOGoSuperUsernames** key
 * Notifications comma separated list of values (no spaces between commas). Known item names are ``ACLs``, ``Folders``, ``Appointments``. See **SOGoSendEMailNotifications**
 * ``{Drafts,Sent,Trash}Folder`` See respective **SOGoFolderName** parameters
-* ``VirtualHosts`` comma separated list of host keys in ``hosts`` DB, with ``type=self``. SOGo is reachable from the default host name plus any host listed here (see #2371).
+* ``VirtualHosts`` SOGo is reachable from the default host name plus the host (FQDN) listed here. The host key is generated/removed in ``hosts`` DB, with ``type=self`` automatically.
 
 
 
@@ -137,21 +139,21 @@ Set by default to 2048KB: ::
 ActiveSync
 ==========
 
-According to this :ref:`webtop-vs-sogo`, WebTop and SOGo can be installed on the same machine.
+According to this :ref:`webtop-vs-sogo`, WebTop and SOGo can be installed on the same machine, although it is discouraged to keep such setup on the long run.
 
-ActiveSync is enabled by default on SOGo and WebTop, but if both packages are installed, WebTop will take precedence.
+ActiveSync is enabled by default on SOGo and WebTop. At installation of SOGo, Webtop-ActiveSync is disabled and SOGo will take precedence.
 
-To disable ActiveSync on SOGo: ::
+SOGo-ActiveSync can be disabled in the server-manager at the SOGo-panel or with: ::
 
   config setprop sogod ActiveSync disabled
   signal-event nethserver-sogo-update
 
-To disable ActiveSync on WebTop: ::
+To enable ActiveSync on WebTop: ::
 
-  config setprop webtop ActiveSync disabled
+  config setprop webtop ActiveSync enabled
   signal-event nethserver-webtop5-update
 
-To enabale ActiveSync on SOGo again: ::
+To enable ActiveSync on SOGo again: ::
 
   config setprop sogod ActiveSync enabled
   signal-event nethserver-sogo-update

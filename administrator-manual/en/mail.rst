@@ -24,12 +24,12 @@ See also the following related topics:
 * Simple Mail Transfer Protocol (SMTP) [#SMTP]_
 * DKIM signature [#DKIM]_
 
-.. warning::
+.. note::
 
     Since |product| 7.5.1804 new :ref:`email-section`,
     :ref:`pop3_connector-section` and :ref:`pop3_proxy-section` installations
-    are based on the Rspamd filter engine. Previous |product| installations can
-    be manually upgraded to Rspamd as described in :ref:`email2-section`
+    are based on the Rspamd filter engine. Previous |product| installations are
+    automatically upgraded to Rspamd as described in :ref:`email2-section`
 
 .. index::
    pair: email; relay
@@ -402,7 +402,7 @@ adjusted under :guilabel:`Email > Filter > Anti spam`.
    SMTP-compliant MTA will attempt to deliver the deferred message again.
 
 2. If the spam score is above :guilabel:`Spam threshold` the message is **marked
-   as spam** by adding the special header ``X-Spam-Flag: YES`` for specific
+   as spam** by adding the special header ``X-Spam: Yes`` for specific
    treatments, then it is delivered like other messages. As an alternative, the
    :guilabel:`Add a prefix to spam messages subject` option makes the spam flag
    visible on the subject of the message, by prefixing the given string to the
