@@ -467,9 +467,11 @@ three types of rules:
 * :guilabel:`Allow To`: any message to the specified recipient is
   accepted
 
-It's possible to create an 'Allow' or 'Block' rule even for a complete email domain, not just for a single email address : you just need to specificy the desired domain (e.g. : nethserver.org).
+It's possible to create an 'Allow' or 'Block' rule even for a complete email domain, not just for a single email address : you just need to specify the desired domain (e.g. : nethserver.org).
 
 .. note:: Antivirus checks are enforced despite *whitelist* settings.
+
+.. _rspamd-web-interface-section:
 
 Rspamd web interface
 --------------------
@@ -479,19 +481,63 @@ administrative web interface at ::
 
   https://<HOST_IP>:980/rspamd
 
-The actual URL is listed under the :guilabel:`Applications` page. By default
-access is granted to members of the ``domain admins`` group and to the ``admin``
-user (see also :ref:`admin-account-section`). An additional special login
-``rspamd`` can be used to access it. Its credentials are available from
-:guilabel:`Email > Filter > Rspamd user interface (Web URL)`: just follow the
-given link.
+For more information on Rspamd, please read the :ref:`rspamd-section` page.
 
-The Rspamd web UI:
+.. only:: nscom
 
-* displays messages and actions counters,
-* shows the server configuration,
-* tracks the history of recent messages,
-* allows training the Bayes filter by submitting a message from the web form.
+    .. _quarantine:
+
+    Quarantine (beta)
+    -----------------
+
+    |product| scans all incomaing email messages before they are delivered to the user mailbox.
+    The messages that are identified as spam will be sent to a specific user mailbox.
+    The purpose of this feature is to verify the email before deleting it.
+    If enabled, a mail notification is also sent to the postmaster (root alias) for each
+    quarantined email.
+
+    .. note::
+
+      The quarantined messages can be accessed using a web mail or an IMAP account
+
+    .. warning::
+
+      The mailbox used for quarantine, must be able to accept spam.
+      It should be a local shared mailbox or a user mailbox.
+      If an external account is used, make sure the account exists on the remote server.
+      Please make sure the quarantine mailbox has been created only for this specific purpose,
+      otherwise the mailbox will be overloaded with unwanted spam.
+
+    Quarantine is provided by an optional module named
+    ``nethserver-mail-quarantine``. Once it has been installed from the
+    :guilabel:`Software center` you must manually set its database properties.
+
+    The properties are under the ``rspamd`` key (configuration database): ::
+
+        rspamd=service
+        ...
+        QuarantineAccount=spam@domain.org
+        QuarantineStatus=enabled
+        SpamNotificationStatus=disabled
+
+
+    * ``QuarantineAccount``: The user or the shared mailbox where to send all spam messages (spam
+      check is automatically disabled on this account). You must create it
+      manually. You could send it to an external mailbox  but then make sure to
+      disable the spam check on the remote server
+
+    * ``QuarantineStatus``: Enable the quarantine, spam are no more rejected:
+      enabled/disabled. Disabled by default
+
+    * ``SpamNotificationStatus``: Enable the email notification when email are
+      quarantined: enabled/disabled. Disabled by default
+
+    For example, the following commands enable the quarantine and the mail
+    notification to root: ::
+
+      config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
+      signal-event nethserver-mail-quarantine-save
+
 
 .. _email_clients:
 
@@ -650,6 +696,7 @@ Yields ::
   /var/log/maillog:May 15 02:05:03 mail postfix/qmgr[27757]: A785B308622AB: from=<no-reply@example.com>, size=2597, nrcpt=1 (queue active)
   /var/log/maillog:May 15 02:05:03 mail postfix/lmtp[25854]: A785B308622AB: to=<vmail+jsmith@mail.mynethserver.org>, orig_to=<jsmith@example.com>, relay=mail.mynethserver.org[/var/run/dovecot/lmtp], delay=0.82, delays=0.8/0.01/0.01/0.01, dsn=2.0.0, status=sent (250 2.0.0 <vmail+jsmith@mail.mynethserver.org> gK8pHS8k+lr/ZAAAJc5BcA Saved)
   /var/log/maillog:May 15 02:05:03 mail postfix/qmgr[27757]: A785B308622AB: removed
+
 
 .. rubric:: References
 
