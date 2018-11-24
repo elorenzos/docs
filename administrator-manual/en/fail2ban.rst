@@ -1,129 +1,116 @@
-========
-Fail2ban
-========
+Fail2ban analiza los archivos de registro (por ejemplo: file: `/ var / log / apache / error_log`) y prohíbe las IP que muestran signos maliciosos: demasiadas fallas en las contraseñas, búsquedas de vulnerabilidades, etc. Generalmente Fail2Ban se usa para actualizar las reglas del firewall rechace las direcciones IP durante un período de tiempo específico, aunque también se podría configurar cualquier otra acción arbitraria (por ejemplo, enviar un correo electrónico). Fuera de la caja Fail2Ban viene con filtros para varios servicios (Apache, Dovecot, Ssh, Postfix, etc.).
 
-Fail2ban scans log files (e.g. :file:`/var/log/apache/error_log`) and bans IPs that show the malicious signs – too many password failures, seeking for exploits, etc. Generally Fail2Ban is then used to update firewall rules to reject the IP addresses for a specified amount of time, although any arbitrary other action (e.g. sending an email) could also be configured. Out of the box Fail2Ban comes with filters for various services (Apache, Dovecot, Ssh, Postfix, etc).
+Fail2Ban puede reducir la tasa de intentos de autenticación incorrectos, sin embargo, no puede eliminar el riesgo que presenta una autenticación débil. Para mejorar la seguridad, abra el acceso al servicio solo para redes seguras utilizando el firewall.
 
-Fail2Ban is able to reduce the rate of incorrect authentications attempts however, it cannot eliminate the risk that weak authentication presents. To improve the security, open the access to service only for secure networks using the firewall.
-
-Installation
+Instalación
 ============
+Instale desde el Centro de software o use la línea de comando: ::
 
-Install from the Software Center or use the command line: ::
+  yum instala nethserver-fail2ban
 
-  yum install nethserver-fail2ban
-
-
-Settings
+Ajustes
 ========
 
-Fail2ban is configurable in the security category of the server-manager. Most of settings can be changed in the :guilabel:`Configuration` tab, only really advanced settings must be configured by the terminal.
+Fail2ban se puede configurar en la categoría de seguridad del administrador del servidor. La mayoría de los ajustes se pueden cambiar en la pestaña: guilabel: `Configuración`, solo el terminal debe configurar los ajustes realmente avanzados.
 
-Jails
+Cárceles
 -----
+Una cárcel está habilitada y comienza a proteger un servicio cuando instala un nuevo módulo, la cárcel correspondiente (si existe) se activa automáticamente después de la instalación del paquete.
+Todas las cárceles se pueden deshabilitar individualmente en la configuración de Jails.
 
-A jail is enabled and start to protect a service when you install a new module, the relevant jail (if existing) is automatically activated after the package installation.
+Número de intentos
+    Número de coincidencias (es decir, el valor del contador) que desencadena una acción de prohibición en la IP.
 
+Espacio de tiempo
+    El contador se establece en cero si no se encuentra ninguna coincidencia dentro de los segundos de "tiempo de búsqueda".
 
-All jails can be disabled individually in the Jails settings.
+Tiempo de ban
+    Duración de la IP para ser prohibido.
 
-Number of attempts
-    Number of matches (i.e. value of the counter) which triggers ban action on the IP.
+La cárcel recidiva es perpetua
+    Cuando una IP va varias veces a la cárcel, la cárcel recidiva lo prohíbe por mucho más tiempo. Si está habilitado, es perpetuo.
 
-Time span
-    The counter is set to zero if no match is found within "findtime" seconds.
-
-Ban Time
-    Duration for IP to be banned for.
-
-Recidive jail is perpetual
-    When an IP goes several time in jail, the recidive jail bans it for a much longer time. If enabled, it is perpetual.
-
-Network
+Red
 -------
-
-Allow bans on the LAN
-    By default the failed attempts from your Local Network are ignored, except when you enabled the option.
-
-
-IP/Network Whitelisting
-    IP listed in the text area will be never banned by fail2ban (one IP per line). Network could be allowed in the Trusted-Network panel.
+Permitir prohibiciones en la LAN
+    De forma predeterminada, los intentos fallidos de su red local se ignoran, excepto cuando habilitó la opción.
+Lista blanca de IP / redes
+    La IP que figura en el área de texto nunca será prohibida por fail2ban (una IP por línea). La red podría ser permitida en el panel de la Red de Confianza.
 
 Email
 -----
 
-Send email notifications
-    Enable to send administrative emails.
+Enviar notificaciones por correo electrónico
+    Habilitar para enviar correos electrónicos administrativos.
 
-Administrators emails
-    List of email addresses of administrators (one address per line).
+Correos electrónicos de los administradores
+    Lista de direcciones de correo electrónico de los administradores (una dirección por línea).
 
-Notify jail start/stop events
-    Send email notifications when a jail is started or stopped.
+Notificar eventos de inicio / parada de la cárcel.
+    Enviar notificaciones por correo electrónico cuando se inicia o se detiene una cárcel.
 
 Unban IP
 ========
 
-IPs are banned when they are found several times in log, during a specific find time. They are stored in a database to be banned again each time your restart the server or the service. To unban an IP you can use the :guilabel:`Unban IP` tab in the status category of the server-manager.
+Las direcciones IP están prohibidas cuando se encuentran varias veces en el registro, durante un tiempo de búsqueda específico. Se almacenan en una base de datos para volver a prohibirse cada vez que reinicie el servidor o el servicio. Para desbancar una IP puede usar la pestaña: guilabel: `Unban IP` en la categoría de estado del administrador del servidor.
 
-Statistics
+Estadística
 ==========
 
-The :guilabel:`Ban statistics` tab is available in the status category of the server-manager, it gives you the total number of bans per jail as well as the total of all bans.
+La pestaña: guilabel: `Estadísticas de prohibición 'está disponible en la categoría de estado del administrador del servidor, le da el número total de prohibiciones por cárcel, así como el total de todas las prohibiciones.
 
-Tools
+Herramientas
 =====
 
 Fail2ban-client
 ---------------
 
-Fail2ban-client is part of the fail2ban rpm, it gives the state of fail2ban and all available jails: ::
+Fail2ban-client es parte de las rpm fail2ban, da el estado de fail2ban y todas las carceles disponibles: ::
 
-  fail2ban-client status
+  estado del cliente fail2ban
 
-To see a specific jail : ::
+Para ver una cárcel específica: ::
 
   fail2ban-client status sshd
 
-To see which logfiles are monitored for a jail: ::
+Para ver qué archivos de registro se monitorean para una cárcel: ::
 
-  fail2ban-client get nginx-http-auth logpath
+  fail2ban-client obtiene nginx-http-auth logpath
 
 Fail2ban-listban
 ----------------
 
-Fail2ban-listban counts the IPs currently and totally banned in all activated jails, at the end it shows the IPs which are still banned by shorewall. ::
+Fail2ban-listban cuenta las direcciones IP actualmente y está totalmente prohibida en todas las cárceles activadas, al final muestra las direcciones IP que aún están prohibidas por shorewall. ::
 
   fail2ban-listban
 
 Fail2ban-regex
 --------------
 
-Fail2ban-regex is a tool which is used to test the regex on you logs, it is a part of fail2ban software. Only one filter is allowed per jail, but it is possible to specify several actions, on separate lines.
+Fail2ban-regex es una herramienta que se utiliza para probar la expresión regular en sus registros, es parte del software fail2ban. Solo se permite un filtro por cárcel, pero es posible especificar varias acciones, en líneas separadas.
 
-The documentation is `readable at the fail2ban project <http://fail2ban.readthedocs.io/en/latest/filters.html>`_. 
+La documentación es `legible en el proyecto fail2ban <http://fail2ban.readthedocs.io/en/latest/filters.html>` _.
 
 ::
 
-  fail2ban-regex /var/log/YOUR_LOG /etc/fail2ban/filter.d/YOUR_JAIL.conf --print-all-matched
+  fail2ban-regex / var / log / YOUR_LOG /etc/fail2ban/filter.d/YOUR_JAIL.conf --print-all-matched
 
-You can also test custom regex directly: ::
+También puede probar la expresión regular personalizada directamente: ::
 
-  fail2ban-regex /var/log/secure '^%(__prefix_line)s(?:error: PAM: )?[aA]uthentication (?:failure|error) for .* from <HOST>( via \S+)?\s*$'
+  fail2ban-regex / var / log / secure '^% (__ prefix_line) s (?: error: PAM:)? [aA] uthentication (?: failure | error) para. * de <HOST> (a través de \ S +)? \ s * $ '
 
 Fail2ban-unban
 --------------
 
-Fail2ban-unban is used to unban an IP when the ban must be removed manually. ::
+Fail2ban-unban se usa para anular una IP cuando la prohibición debe eliminarse manualmente. ::
 
   fail2ban-unban <IP>
 
-You can use also the built-in command with fail2ban-client: ::
+También puede usar el comando incorporado con fail2ban-client: ::
 
   fail2ban-client set <JAIL> unbanip <IP>
 
-Whois
+Quien es
 =====
 
-If you desire to query the IP ``whois`` database and obtain the origin of the banned IP by email, you could  Install the ``whois`` rpm.
-
+Si desea consultar la base de datos de IP `` whois`` y obtener el origen de la IP prohibida por correo electrónico, puede instalar el `` whois`` rpm.
